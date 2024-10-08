@@ -68,7 +68,7 @@ exports.deleteFile = async (req, res) => {
         }
 
         // Delete the file from S3
-        await cloudStorage.deleteFileFromS3(file.name);
+        // await cloudStorage.deleteFileFromS3(file.name);
         // Use the model to delete the file
         await File.findByIdAndDelete(req.params.id); // or file.deleteOne();
 
