@@ -25,7 +25,7 @@ router.get('/google/callback',(req, res, next) => {
       // Optionally, perform additional logic here (e.g., sending data to frontend)
 
       // Redirect to the frontend dashboard after successful login
-      res.redirect('http://localhost:8080/dashboard');
+      res.redirect('https://upload-files-phi.vercel.app/dashboard');
     });
   })(req, res, next);
 });

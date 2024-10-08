@@ -5,7 +5,7 @@ let io;
 exports.initWebSocket = (server) => {
   io = socketIo(server,{
     cors: {
-      origin: "http://localhost:8080",
+      origin: "https://upload-files-phi.vercel.app/",
       methods: ["GET", "POST"],
       credentials: true,
     },

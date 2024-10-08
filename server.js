@@ -16,7 +16,7 @@ const server = require('http').Server(app);
 initWebSocket(server);
 // Middleware
 app.use(cors({
-    origin: 'http://localhost:8080',
+    origin: 'https://upload-files-phi.vercel.app/',
     credentials: true,
 }));
 app.use(express.json());
