@@ -51,14 +51,22 @@ exports.deleteFolder = async (req, res) => {
 exports.deleteFileFromFolder = async (req, res) => {
   const { fileId, folderName } = req.params;
   try {
-    let fromfolder = await Folder.findOne({ name: folderName });
-    const filesToupdatefrom = fromfolder.files.filter((file) => file._id.toString() !== fileId.toString());
+    let progress = 0;
+    getIO().emit("delete-progress-file", progress);
 
+    let fromfolder = await Folder.findOne({ name: folderName });
+    progress = 20;
+    getIO().emit("upload-progress-file", progress);
+    const filesToupdatefrom = fromfolder.files.filter((file) => file._id.toString() !== fileId.toString());
+    progress = 60;
+    getIO().emit("upload-progress-file", progress);
     await Folder.findOneAndUpdate(
       { name: folderName },
       { $set: { files: filesToupdatefrom } },
       { new: true }
     );
+    progress = 100;
+    getIO().emit("upload-progress-file", progress);
 
     res.status(204).send({ message: 'File Deleted Successfully' });
   } catch (err) {
