@@ -12,9 +12,9 @@ router.get('/google/callback',(req, res, next) => {
     if (err) {
       return next(err);
     }
-    // if (!user) {
-    //   return res.redirect('/');
-    // }
+    if (!user) {
+      return res.redirect('/');
+    }
 
     // Manually log in the user
     req.login(user, (loginErr) => {
