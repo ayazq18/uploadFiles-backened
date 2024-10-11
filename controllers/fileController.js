@@ -50,9 +50,9 @@ exports.uploadFile = (req, res) => {
 
 exports.getFiles = async (req, res) => {
     try {
-        const { mail } = req.query; // Get mail from query parameters
+        const { mail } = req.query;
         const files = await File.find({ mail });
-        res.json(files);
+        progress = 70;
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -61,8 +61,12 @@ exports.getFiles = async (req, res) => {
 
 exports.deleteFile = async (req, res) => {
     try {
-        const file = await File.findById(req.params.id);
+        let progress = 0;
+        getIO().emit("delete-progress-file", progress);
 
+        const file = await File.findById(req.params.id);
+        progress = 50;
+        getIO().emit("delete-progress-file", progress);
         if (!file) {
             return res.status(404).json({ error: 'File not found' });
         }
@@ -71,8 +75,11 @@ exports.deleteFile = async (req, res) => {
         // await cloudStorage.deleteFileFromS3(file.name);
         // Use the model to delete the file
         await File.findByIdAndDelete(req.params.id); // or file.deleteOne();
-
+        progress = 70;
+        getIO().emit("delete-progress-file", progress);
         res.status(200).json({ message: 'File deleted successfully' });
+        progress = 100;
+        getIO().emit("delete-progress-file", progress);
     } catch (err) {
         console.error('Error deleting file:', err);
         res.status(500).json({ error: err.message });
