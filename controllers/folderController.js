@@ -11,7 +11,7 @@ exports.createFolder = async (req, res) => {
   try {
     let progress;
     getIO().emit("upload-progress-folder", progress);
-console.log(req.body)
+
     const folder = await Folder.create({
       name: req.body.name,
       mail: req.body.mail,
@@ -79,6 +79,8 @@ exports.deleteFileFromFolder = async (req, res) => {
 exports.downloadFolderAsZip = async (req, res) => {
   const { folderId } = req.params;
   try {
+    progress = 0;
+    getIO().emit("download-progress-file", progress);
     const folder = await Folder.findById(folderId);
     if (folder.files.length === 0) {
       return res.status(404).json({ message: 'Folder or files not found' });
@@ -86,7 +88,8 @@ exports.downloadFolderAsZip = async (req, res) => {
 
     res.setHeader('Content-Type', 'application/zip');
     res.setHeader('Content-Disposition', `attachment; filename=${folder.name}.zip`);
-
+    progress = 20;
+    getIO().emit("download-progress-file", progress);
     const archive = archiver('zip', {
       zlib: { level: 9 },
     });
@@ -96,7 +99,8 @@ exports.downloadFolderAsZip = async (req, res) => {
     });
 
     archive.pipe(res);
-
+    progress = 60;
+    getIO().emit("download-progress-file", progress);
     for (const file of folder.files) {
       const response = await axios({
         method: 'GET',
@@ -106,9 +110,11 @@ exports.downloadFolderAsZip = async (req, res) => {
 
       archive.append(response.data, { name: file.name });
     }
-
+    progress = 80;
+    getIO().emit("download-progress-file", progress);
     await archive.finalize();
-
+    progress = 100;
+    getIO().emit("download-progress-file", progress);
   } catch (err) {
     console.error('Error downloading folder as ZIP:', err);
     if (!res.headersSent) {
