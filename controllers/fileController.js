@@ -50,9 +50,9 @@ exports.uploadFile = (req, res) => {
 
 exports.getFiles = async (req, res) => {
     try {
-        const { mail } = req.query;
+        const { mail } = req.query; // Get mail from query parameters
         const files = await File.find({ mail });
-        progress = 70;
+        res.json(files);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
