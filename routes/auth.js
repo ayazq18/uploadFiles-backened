@@ -12,17 +12,15 @@ router.get('/google/callback',(req, res, next) => {
     if (err) {
       return next(err);
     }
-    if (!user) {
-      return res.redirect('/');
-    }
+    // if (!user) {
+    //   return res.redirect('/');
+    // }
 
-    // Manually log in the user (since we're using a custom callback)
+    // Manually log in the user
     req.login(user, (loginErr) => {
       if (loginErr) {
         return next(loginErr);
       }
-
-      // Optionally, perform additional logic here (e.g., sending data to frontend)
 
       // Redirect to the frontend dashboard after successful login
       res.redirect('https://upload-files-phi.vercel.app/dashboard');
@@ -53,7 +51,7 @@ router.get('/current_user', (req, res) => {
   if (!req.user) {
     return null
   }
-  res.status(201).json(req.user); // Send error if not authenticated
+  res.status(201).json(req.user);
 });
 
 router.post('/user/login', async(req, res) => {
