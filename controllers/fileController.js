@@ -1,7 +1,5 @@
 const File = require('../models/file');
 const cloudStorage = require('../services/cloudStorage');
-const archiver = require('archiver');
-const fs = require('fs');
 const Folder = require('../models/folder');
 const { emitEvent } = require('../services/webSocket');
 const { getIO } = require('../services/webSocket');
@@ -27,13 +25,13 @@ exports.uploadFile = (req, res) => {
             const { mail } = req.body;
             progress = 20;
             getIO().emit("upload-progress-file", progress);
-            const result = await cloudStorage.uploadFileToS3(req.file);
+            // const result = await cloudStorage.uploadFileToS3(req.file);
 
             progress = 50;
             getIO().emit("upload-progress-file", progress);
             const file = await File.create({
                 name: req.file.originalname,
-                url: result.fileUrl,
+                // url: result.fileUrl,
                 size: req.file.size,
                 mail: mail,
                 pathref: "file",
@@ -50,7 +48,7 @@ exports.uploadFile = (req, res) => {
 
 exports.getFiles = async (req, res) => {
     try {
-        const { mail } = req.query; // Get mail from query parameters
+        const { mail } = req.query;
         const files = await File.find({ mail });
         res.json(files);
     } catch (err) {
@@ -63,13 +61,14 @@ exports.deleteFile = async (req, res) => {
     try {
         let progress = 0;
         getIO().emit("delete-progress-file", progress);
-
+        console.log(req.params.id)
         const file = await File.findById(req.params.id);
         progress = 50;
         getIO().emit("delete-progress-file", progress);
         if (!file) {
             return res.status(404).json({ error: 'File not found' });
         }
+        console.log(file)
 
         // Delete the file from S3
         // await cloudStorage.deleteFileFromS3(file.name);
@@ -82,23 +81,6 @@ exports.deleteFile = async (req, res) => {
         getIO().emit("delete-progress-file", progress);
     } catch (err) {
         console.error('Error deleting file:', err);
-        res.status(500).json({ error: err.message });
-    }
-};
-
-exports.downloadFolderAsZip = async (req, res) => {
-    try {
-        const folder = await Folder.findById(req.params.folderId).populate('files');
-        const archive = archiver('zip');
-        res.attachment(`${folder.name}.zip`);
-        archive.pipe(res);
-
-        folder.files.forEach((file) => {
-            archive.append(request(file.url), { name: file.name });
-        });
-
-        archive.finalize();
-    } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };

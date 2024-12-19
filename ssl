@@ -1,0 +1,3 @@
+openssl genrsa -out private.key 2048
+openssl req -new -key private.key -out server.csr
+openssl x509 -req -in server.csr -signkey private.key -out server.crt
